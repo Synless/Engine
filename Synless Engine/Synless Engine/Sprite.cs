@@ -13,6 +13,7 @@ namespace Synless_Engine
     class Sprite
     {
         #region Variables
+        private const string bmpPath = "frames/";
         public Bitmap[] tiles    = new Bitmap[32];
         public int[] tiles_type  = new int[32];
         public int Width;
@@ -28,7 +29,7 @@ namespace Synless_Engine
                 for (int n = 0; n < tiles_type.Length; n++)
                 {   try
                     {
-                        path = "chell" + n.ToString() + ".bmp";
+                        path = bmpPath + "chell" + n.ToString() + ".bmp";
                         tiles[n] = new Bitmap(path);
                         nbSprite++;
                     }
@@ -48,13 +49,13 @@ namespace Synless_Engine
             }
             else if(_type == "map")
             {
-                tiles[0] = new Bitmap("map_background.bmp");
-                tiles[1] = new Bitmap("map_block.bmp");
-                tiles[2] = new Bitmap("map_block_dark.bmp");
-                tiles[3] = new Bitmap("map_block_glass.bmp");
-                tiles[4] = new Bitmap("map_in.bmp");
-                tiles[5] = new Bitmap("map_out.bmp");
-                tiles[6] = new Bitmap("map_zap.bmp");
+                tiles[0] = new Bitmap(bmpPath + "map_background.bmp");
+                tiles[1] = new Bitmap(bmpPath + "map_block.bmp");
+                tiles[2] = new Bitmap(bmpPath + "map_block_dark.bmp");
+                tiles[3] = new Bitmap(bmpPath + "map_block_glass.bmp");
+                tiles[4] = new Bitmap(bmpPath + "map_in.bmp");
+                tiles[5] = new Bitmap(bmpPath + "map_out.bmp");
+                tiles[6] = new Bitmap(bmpPath + "map_zap.bmp");
                 tiles_type[0] = 0;
                 tiles_type[1] = 1;
                 tiles_type[2] = 2;
@@ -71,8 +72,8 @@ namespace Synless_Engine
             {
                 try
                 {
-                    tiles[0] = new Bitmap("portal_blue_rigth_backup.bmp");
-                    tiles[1] = new Bitmap("portal_blue_top_backup.bmp");
+                    tiles[0] = new Bitmap(bmpPath + "portal_blue_rigth_backup.bmp");
+                    tiles[1] = new Bitmap(bmpPath + "portal_blue_top_backup.bmp");
                 }
                 catch
                 {
@@ -83,8 +84,8 @@ namespace Synless_Engine
             {
                 try
                 { 
-                    tiles[0] = new Bitmap("portal_orange_rigth_backup.bmp");
-                    tiles[1] = new Bitmap("portal_orange_top_backup.bmp");
+                    tiles[0] = new Bitmap(bmpPath + "portal_orange_rigth_backup.bmp");
+                    tiles[1] = new Bitmap(bmpPath + "portal_orange_top_backup.bmp");
                 }
                 catch
                 {
