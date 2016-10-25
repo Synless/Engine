@@ -151,7 +151,7 @@ namespace Synless_Engine
         }
 
         /// <summary>
-        /// Calculate the acceleration and speed of chell
+        /// Calculate the acceleration and speed of Chell
         /// </summary>
         private void KinematicEquations()
         {
@@ -380,7 +380,7 @@ namespace Synless_Engine
         }
 
         /// <summary>
-        /// Teleport chell from one portal to another
+        /// Teleport Chell from one portal to another
         /// Re-affect forces
         /// </summary>
         /// <param name="_b2o">True : Jumping from blue to orange | False : jumping from orange to blue</param>
