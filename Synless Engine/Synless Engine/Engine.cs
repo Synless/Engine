@@ -835,7 +835,7 @@ namespace Synless_Engine
         }
 
         /// <summary>
-        /// Set chell viewing border according to her position around portals
+        /// Set Chell viewing border according to her position around portals
         /// </summary>
         private void CheckChellBorder()
         {
@@ -1441,7 +1441,7 @@ namespace Synless_Engine
         }
 
         /// <summary>
-        /// Soft reset of the screenn redraw the map
+        /// Soft reset of the screen - redraw the map
         /// </summary>
         private void resetScreen()
         {
@@ -1451,10 +1451,7 @@ namespace Synless_Engine
                 {
                     //addToScreen(carte.level[lvl].spr tile_type[x, y], (x * carte.tile_size), (y * carte.tile_size));
                     addToScreen(carte.level[lvl].GetBlock(x, y), x * carte.tile_size, y * carte.tile_size);
-
                     //Bitmap tmp = new Bitmap(carte.level[lvl].background.GetSprite[carte.level[lvl].background.tiles_type[x,y]]);
-
-
                     //addToScreen(carte.background.tiles[carte.tile_type[lvl,x, y]], (x * carte.tile_size), (y * carte.tile_size));
                 }
             }
