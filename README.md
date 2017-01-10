@@ -1,4 +1,4 @@
 # Engine
-Portal like game engine
+2D Portal like game engine
 
-Sticking close to C and simple object
+Sticking close to C/C+
