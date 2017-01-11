@@ -28,6 +28,7 @@ namespace Synless_Engine.Properties
         private static global::System.Resources.ResourceManager resourceMan;
 
         private static global::System.Globalization.CultureInfo resourceCulture;
+        internal static object chell0;
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Resources()

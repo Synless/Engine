@@ -45,9 +45,9 @@ namespace Synless_Engine
         public Caracter(int _posx, int _posy)
         {
             spr = new Sprite("chell");
-            cur_spr             = spr.GetSprite(0);
-            Width               = spr.Width;
-            Height              = spr.Height;
+            cur_spr             = spr.getSprite(0);
+            Width               = spr.width;
+            Height              = spr.height;
             pixelToSee_X        = 0;
             pixelToSeeBorder_X  = Width;
             pixelToSee_Y        = 0;
@@ -72,8 +72,8 @@ namespace Synless_Engine
         {
             if (_blue) { spr = new Sprite("portal_blue"); }
             else { spr = new Sprite("portal_orange"); }
-            Width = spr.Width;
-            Height = spr.Height;
+            Width = spr.width;
+            Height = spr.height;
             pos_X = _pos_X;
             pos_Y = _pos_Y;
             posMid_X = pos_X + (Width >> 1) - 1;
@@ -82,7 +82,7 @@ namespace Synless_Engine
             posBorder_Y = pos_Y + Height - 1;
             orientation = _orientation;
             cur_tile = 0;
-            cur_spr = spr.GetSprite(cur_tile);
+            cur_spr = spr.getSprite(cur_tile);
         } // PORTAL
         public Caracter(Caracter _charac, bool _blue) // MAYBE TO BE ADDED : CHELL COMPATIBILITY
         {
@@ -106,23 +106,23 @@ namespace Synless_Engine
         /// Rotate the charater from is current orientation to the sent one,
         /// only affects the portals
         /// </summary>
-        public void Rotation(string _newOrientation)
+        public void rotation(string _newOrientation)
         {
             orientation = _newOrientation;
             if (orientation == "rigth" || orientation == "left")
             {
                 Width = cur_spr.Width;
                 Height = cur_spr.Height;
-                SetPosMid_X(posMid_X);
-                SetPosMid_Y(posMid_Y);
+                setPosMid_X(posMid_X);
+                setPosMid_Y(posMid_Y);
 
             }
             else if (orientation == "bot" || orientation == "top")
             {
                 Height = cur_spr.Width;
                 Width = cur_spr.Height;
-                SetPosMid_X(posMid_X);
-                SetPosMid_Y(posMid_Y);
+                setPosMid_X(posMid_X);
+                setPosMid_Y(posMid_Y);
             }
         }
 
@@ -130,7 +130,7 @@ namespace Synless_Engine
         /// Used to remember the character position from one tick to another,
         /// usefull to process acceleration and speed
         /// </summary>
-        public void Remember()
+        public void rememberPosition()
         {
             last_pos_X      = pos_X;
             last_pos_Y      = pos_Y;
@@ -146,7 +146,7 @@ namespace Synless_Engine
         /// Set a position in the X axis for the caracter starting from the start/left
         /// </summary>
         /// /// /// <param name="_posMid_X">new top position in X axis</param>
-        public void SetPos_X(int _pos_X)
+        public void setPos_X(int _pos_X)
         {
             pos_X = _pos_X;
             posMid_X = pos_X + (Width >> 1) - 1;
@@ -157,7 +157,7 @@ namespace Synless_Engine
         /// Set a position in the Y axis for the caracter starting from the start/top
         /// </summary>
         /// /// <param name="_posMid_Y">new top position in Y axis</param>
-        public void SetPos_Y(int _pos_Y)
+        public void setPos_Y(int _pos_Y)
         {
             pos_Y = _pos_Y;
             posMid_Y = pos_Y + (Height >> 1) - 1;
@@ -168,7 +168,7 @@ namespace Synless_Engine
         /// Set a position in the X axis for the caracter starting from the middle
         /// </summary>
         /// <param name="_posMid_X">new middle position in X axis</param>
-        public void SetPosMid_X(int _posMid_X)
+        public void setPosMid_X(int _posMid_X)
         {
             posMid_X = _posMid_X;
             pos_X = posMid_X - (Width >> 1) + 1;
@@ -179,7 +179,7 @@ namespace Synless_Engine
         /// Set a position in the Y axis for the caracter starting from the middle
         /// </summary>
         /// <param name="_posMid_Y">new middle position in Y axis</param>
-        public void SetPosMid_Y(int _posMid_Y)
+        public void setPosMid_Y(int _posMid_Y)
         {
             posMid_Y = _posMid_Y;
             pos_Y = posMid_Y - (Height>>1)  +1;            
@@ -190,20 +190,20 @@ namespace Synless_Engine
         /// Pre-processing done to a portal to have an even position at the start of the shooting calculation
         /// </summary>
         /// <param name="_posMid_Y">new middle position in Y axis</param>
-        public void SetPosMid_Y(int _portal_posMid_X, int _portal_posMid_y, string _orientation)
+        public void setPosMid_Y(int _portal_posMid_X, int _portal_posMid_y, string _orientation)
         {
-            SetPosMid_X(_portal_posMid_X);
-            SetPosBorder_Y(_portal_posMid_y);
-            Rotation(_orientation);
-            SetPosMid_X(_portal_posMid_X);
-            SetPosBorder_Y(_portal_posMid_y);
+            setPosMid_X(_portal_posMid_X);
+            setPosBorder_Y(_portal_posMid_y);
+            rotation(_orientation);
+            setPosMid_X(_portal_posMid_X);
+            setPosBorder_Y(_portal_posMid_y);
         }
 
         /// <summary>
         /// Set a position in the X axis for the caracter starting from the end/rigth
         /// </summary>
         /// <param name="_posBorder_X">new border position in X axis</param>
-        public void SetPosBorder_X(int _posBorder_X)
+        public void setPosBorder_X(int _posBorder_X)
         {
             posBorder_X = _posBorder_X;
             pos_X = posBorder_X - Width + 1;
@@ -214,7 +214,7 @@ namespace Synless_Engine
         /// Set a position in the Y axis for the caracter starting from the end/bottom
         /// </summary>
         /// <param name="_posBorder_Y">new border position in Y axis</param>
-        public void SetPosBorder_Y(int _posBorder_Y)
+        public void setPosBorder_Y(int _posBorder_Y)
         {
             posBorder_Y = _posBorder_Y;
             pos_Y = posBorder_Y - Height + 1;
@@ -265,7 +265,7 @@ namespace Synless_Engine
         /// Move the character in the X axis from the sent numer of pixel
         /// </summary>
         /// <param name="_px">Number of pixel to move to the char</param>
-        public void AddX(int _px)
+        public void add_X(int _px)
         {
             pos_X += _px;
             posMid_X += _px;
@@ -276,7 +276,7 @@ namespace Synless_Engine
         /// Move the character in the Y axis from the sent numer of pixel
         /// </summary>
         /// <param name="_py">Number of pixel to move to the char</param>
-        public void AddY(int _py)
+        public void add_Y(int _py)
         {
             pos_Y += _py;
             posMid_Y += _py;
@@ -288,7 +288,7 @@ namespace Synless_Engine
         /// <summary>
         /// Set the new sprite according to the acceleration in both X and Y axis
         /// </summary>
-        public void UpdateSprite()
+        public void updateSprite()
         {
             if (acceleration_Y != 0)
             {
@@ -341,12 +341,12 @@ namespace Synless_Engine
                     }
                 }
             }
-            cur_spr = spr.GetSprite(cur_tile);
+            cur_spr = spr.getSprite(cur_tile);
         }
         /// <summary>
         /// Reset the area of the caracter to be saw to the default value (full view)
         /// </summary>
-        public void ResetBorder()
+        public void resetBorder()
         {
             pixelToSee_X = 0;
             pixelToSee_Y = 0;

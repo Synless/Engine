@@ -39,7 +39,7 @@ namespace Synless_Engine
               reverse_map = false;
         }
 
-        public Bitmap GetBlock(int _x, int _y)
+        public Bitmap getBlock(int _x, int _y)
         {
             return background.tiles[tile_type[_x,_y]];
         }

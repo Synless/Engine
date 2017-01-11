@@ -1,14 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Input;
-
 
 namespace Synless_Engine
 {
@@ -22,19 +14,19 @@ namespace Synless_Engine
         Caracter portal_orange;
 
         const int G = 50;
-        const int d_PRESCALE = 25;
-        const int f_JUMPFORCE = -12000;
-        const int f_MOVINGFORCE = 8600;
-        const int f_SPEEDCALLBACK = 450;
-        const int _f_PORTAL_X = 10000;
-        const int _f_PORTAL_Y = 500;
-        const int f_GND = 2;
-        const int d_SPEED = 1;
-        const int capSpeed = 9;
+        const int PRESCALE = 25;
+        const int JUMPFORCE = -12000;
+        const int MOVINGFORCE = 8600;
+        const int SPEEDCALLBACK = 450;
+        const int PORTAL_X = 10000;
+        const int PORTAL_Y = 500;
+        const int GND = 2;
+        const int SPEED = 1;
+        const int CAPSPEED = 9;
 
         int portalShot_X = 0;
         int portalShot_Y = 0;
-        int friction = 2;
+        int f_friction = 2;
         int f_frottement_Y = 0;
         int f_frottement_X = 0;
         int f_frottement_GND = 0;
@@ -42,7 +34,7 @@ namespace Synless_Engine
         int f_ext_Y = 0;
         int f_portal_X = 0;
         int f_portal_Y = 0;
-        int poids = 0;
+        int f_poids = 0;
         int closeTick = 0;
         int lvl = 0;
         long tick = 0;
@@ -60,8 +52,8 @@ namespace Synless_Engine
         bool displayOrange = true;
         bool begining = true;
         bool end = false;
-        #endregion
         bool reverse = false;
+        #endregion
 
         public Engine()
         {
@@ -69,7 +61,7 @@ namespace Synless_Engine
             resetLevel();
         }
 
-        public Bitmap GetScreen()
+        public Bitmap getScreen()
         {
             calculate();
             display();
@@ -79,17 +71,17 @@ namespace Synless_Engine
         #region Physic
         private void calculate()
         {
-            chell.Remember();
-            Kinematic();
-            MoveChell();
-            CheckChellBorder();
-            chell.UpdateSprite();
-            portal_blue.UpdateSprite();
-            portal_orange.UpdateSprite();
+            chell.rememberPosition();
+            kinematic();
+            moveChell();
+            checkChellBorder();
+            chell.updateSprite();
+            portal_blue.updateSprite();
+            portal_orange.updateSprite();
             if (updatePortalPosBool == true)
             {
                 updatePortalPosBool = false;
-                UpdatePortalPos();
+                updatePortalPos();
             }
         }
 
@@ -97,7 +89,7 @@ namespace Synless_Engine
         /// Check the behavior of the engine regarding the character driving,
         /// CPU driven (enterring and leaving the level) or manual driven (user inputs)
         /// </summary>
-        private void Kinematic()
+        private void kinematic()
         {
             if (begining)
             {
@@ -145,7 +137,7 @@ namespace Synless_Engine
             {
                 end = begining = false;
                 begining = false;
-                KinematicEquations();
+                kinematicEquations();
             }
             tick++;
         }
@@ -153,15 +145,15 @@ namespace Synless_Engine
         /// <summary>
         /// Calculate the acceleration and speed of Chell
         /// </summary>
-        private void KinematicEquations()
+        private void kinematicEquations()
         {
-            poids = G * chell.weight;
+            f_poids = G * chell.weight;
             //PROCESS Y AXIS ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             if (KeyPressed_UP)
             {
                 if (once && !chell.isFalling)
                 {
-                    f_ext_Y = f_JUMPFORCE;
+                    f_ext_Y = JUMPFORCE;
                     once = false;
                 }
                 else
@@ -174,26 +166,26 @@ namespace Synless_Engine
                 f_ext_Y = 0;
             }
 
-            f_frottement_Y = chell.speed_Y * Math.Abs(chell.speed_Y) * friction;
-            chell.acceleration_Y = ((poids - f_frottement_Y + f_ext_Y + f_portal_Y) / chell.weight) / d_PRESCALE;
+            f_frottement_Y = chell.speed_Y * Math.Abs(chell.speed_Y) * f_friction;
+            chell.acceleration_Y = ((f_poids - f_frottement_Y + f_ext_Y + f_portal_Y) / chell.weight) / PRESCALE;
             chell.speed_Y = chell.acceleration_Y + chell.last_speed_Y;
             f_portal_Y = f_portal_Y >> 2;
             //END PROCESS Y AXIS
 
             //PROCESS X AXIS // CHECK WITH A MAX SPEED
-            f_frottement_X = chell.speed_X * Math.Abs(chell.speed_X) * friction;
-            chell.acceleration_X = ((f_frottement_X + f_frottement_GND + f_ext_X + f_portal_X) / chell.weight) / d_PRESCALE;
+            f_frottement_X = chell.speed_X * Math.Abs(chell.speed_X) * f_friction;
+            chell.acceleration_X = ((f_frottement_X + f_frottement_GND + f_ext_X + f_portal_X) / chell.weight) / PRESCALE;
             chell.speed_X = chell.acceleration_X + chell.last_speed_X;
             f_portal_X = f_portal_X >> 4;
 
-            if (!chell.isFalling) //CONSTANT FRICTION WITH GROUND
+            if (!chell.isFalling) //CONSTANT f_friction WITH GROUND
             {
-                if (chell.speed_X > f_GND) { chell.speed_X = chell.speed_X - f_GND; }
-                else if (chell.speed_X < -f_GND) { chell.speed_X = chell.speed_X + f_GND; }
-                else { chell.speed_X >>= d_SPEED; }
+                if (chell.speed_X > GND) { chell.speed_X = chell.speed_X - GND; }
+                else if (chell.speed_X < -GND) { chell.speed_X = chell.speed_X + GND; }
+                else { chell.speed_X >>= SPEED; }
 
-                if (KeyPressed_RIGHT && !KeyPressed_LEFT/* && canGoRigth == 0*/) { f_ext_X = f_MOVINGFORCE - (f_SPEEDCALLBACK * chell.speed_X); }
-                else if (!KeyPressed_RIGHT && KeyPressed_LEFT/* && canGoLeft == 0*/) { f_ext_X = -f_MOVINGFORCE - (f_SPEEDCALLBACK * chell.speed_X); }
+                if (KeyPressed_RIGHT && !KeyPressed_LEFT/* && canGoRigth == 0*/) { f_ext_X = MOVINGFORCE - (SPEEDCALLBACK * chell.speed_X); }
+                else if (!KeyPressed_RIGHT && KeyPressed_LEFT/* && canGoLeft == 0*/) { f_ext_X = -MOVINGFORCE - (SPEEDCALLBACK * chell.speed_X); }
                 else 
                 {
                     f_ext_X = 0;
@@ -201,12 +193,12 @@ namespace Synless_Engine
             }
             else //SAME -> TOTAL AIR CONTROL
             {
-                if (chell.speed_X > f_GND) { chell.speed_X = chell.speed_X - f_GND; }
-                else if (chell.speed_X < -f_GND) { chell.speed_X = chell.speed_X + f_GND; }
-                else { chell.speed_X >>= d_SPEED; }
+                if (chell.speed_X > GND) { chell.speed_X = chell.speed_X - GND; }
+                else if (chell.speed_X < -GND) { chell.speed_X = chell.speed_X + GND; }
+                else { chell.speed_X >>= SPEED; }
 
-                if (KeyPressed_RIGHT && !KeyPressed_LEFT) { f_ext_X = f_MOVINGFORCE - (f_SPEEDCALLBACK * chell.speed_X); }
-                else if (!KeyPressed_RIGHT && KeyPressed_LEFT) { f_ext_X = -f_MOVINGFORCE - (f_SPEEDCALLBACK * chell.speed_X); }
+                if (KeyPressed_RIGHT && !KeyPressed_LEFT) { f_ext_X = MOVINGFORCE - (SPEEDCALLBACK * chell.speed_X); }
+                else if (!KeyPressed_RIGHT && KeyPressed_LEFT) { f_ext_X = -MOVINGFORCE - (SPEEDCALLBACK * chell.speed_X); }
                 else 
                 {
                     f_ext_X = 0; 
@@ -225,7 +217,7 @@ namespace Synless_Engine
         /// Also check if she bump into some portal
         /// </summary>
         /// <param name="_px">Number of pixel to move to the char</param>
-        private void MoveChell()
+        private void moveChell()
         {
             for (int n = 0; n < chell.speed_Y; n++) //  ↓
             {
@@ -397,17 +389,17 @@ namespace Synless_Engine
                         chell.last_speed_X = -chell.speed_X;
                         chell.speed_X = chell.last_speed_X = -chell.speed_X;
 
-                        chell.SetPosMid_Y(portal_orange.posMid_Y + chell.posMid_Y - portal_blue.posMid_Y);
-                        chell.SetPosMid_X(portal_orange.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y + chell.posMid_Y - portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X);
 
-                        f_portal_X = -_f_PORTAL_X;
+                        f_portal_X = -PORTAL_X;
                     }
                     else if (portal_orange.orientation == "left")
                     {
-                        chell.SetPosMid_X(portal_orange.posMid_X);
-                        chell.SetPosMid_Y(portal_orange.posMid_Y + chell.posMid_Y - portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y + chell.posMid_Y - portal_blue.posMid_Y);
 
-                        f_portal_X = _f_PORTAL_X;
+                        f_portal_X = PORTAL_X;
                     }
                     else if (portal_orange.orientation == "top")
                     {
@@ -418,10 +410,10 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = tmp1;
                         chell.acceleration_X = tmp2;
 
-                        chell.SetPosMid_Y(portal_orange.posMid_Y);
-                        chell.SetPosMid_X(portal_orange.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X);
 
-                        f_portal_Y = _f_PORTAL_Y;
+                        f_portal_Y = PORTAL_Y;
                     }
                     else if (portal_orange.orientation == "bot")
                     {
@@ -432,29 +424,29 @@ namespace Synless_Engine
                         chell.acceleration_Y = -chell.acceleration_X;
                         chell.acceleration_X = tmp2;
 
-                        chell.SetPosMid_X(portal_orange.posMid_X);
-                        chell.SetPosMid_Y(portal_orange.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y);
 
-                        f_portal_Y = -_f_PORTAL_Y;
+                        f_portal_Y = -PORTAL_Y;
                     }
                 }
                 else if (portal_blue.orientation == "left")
                 {
                     if (portal_orange.orientation == "rigth")
                     {
-                        chell.SetPosMid_X(portal_orange.posMid_X - (chell.Width >> 1));
-                        chell.SetPosMid_Y(portal_orange.posMid_Y + chell.posMid_Y - portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X - (chell.Width >> 1));
+                        chell.setPosMid_Y(portal_orange.posMid_Y + chell.posMid_Y - portal_blue.posMid_Y);
 
-                        f_portal_X = -_f_PORTAL_X;
+                        f_portal_X = -PORTAL_X;
                     }
                     else if (portal_orange.orientation == "left")
                     {
                         chell.acceleration_X = -chell.acceleration_X;
                         chell.speed_X = chell.last_speed_X = -chell.speed_X;
-                        chell.SetPosMid_X(portal_orange.posMid_X);
-                        chell.SetPosMid_Y(portal_orange.posMid_Y + chell.posMid_Y - portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y + chell.posMid_Y - portal_blue.posMid_Y);
 
-                        f_portal_X = _f_PORTAL_X;
+                        f_portal_X = PORTAL_X;
                     }
                     else if (portal_orange.orientation == "top")
                     {
@@ -465,10 +457,10 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = tmp1;
                         chell.acceleration_X = tmp2;
 
-                        chell.SetPosMid_X(portal_orange.posMid_X);
-                        chell.SetPosMid_Y(portal_orange.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y);
 
-                        f_portal_Y = _f_PORTAL_Y;
+                        f_portal_Y = PORTAL_Y;
                     }
                     else if (portal_orange.orientation == "bot")
                     {
@@ -479,10 +471,10 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = tmp1;
                         chell.acceleration_X = tmp2;
 
-                        chell.SetPosMid_X(portal_orange.posMid_X);
-                        chell.SetPosMid_Y(portal_orange.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y);
 
-                        f_portal_Y = -_f_PORTAL_Y;
+                        f_portal_Y = -PORTAL_Y;
                     }
                 }
                 else if (portal_blue.orientation == "top")
@@ -496,10 +488,10 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = -tmp1;
                         chell.acceleration_X = -tmp2;
 
-                        chell.SetPosMid_X(portal_orange.posMid_X);
-                        chell.SetPosMid_Y(portal_orange.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y);
 
-                        f_portal_X = -_f_PORTAL_X;
+                        f_portal_X = -PORTAL_X;
                     }
                     else if (portal_orange.orientation == "left")
                     {
@@ -510,28 +502,28 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = -tmp1;
                         chell.acceleration_X = -tmp2;
 
-                        chell.SetPosMid_X(portal_orange.posMid_X);
-                        chell.SetPosMid_Y(portal_orange.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y);
 
-                        f_portal_X = _f_PORTAL_X;
+                        f_portal_X = PORTAL_X;
                     }
                     else if (portal_orange.orientation == "top")
                     {
                         chell.speed_Y = -chell.speed_Y;
                         chell.acceleration_Y = -chell.acceleration_Y;
 
-                        chell.SetPos_X(portal_orange.pos_X + chell.pos_X - portal_blue.pos_X);
-                        chell.SetPos_Y(portal_orange.pos_Y - (chell.Height >> 1));
+                        chell.setPos_X(portal_orange.pos_X + chell.pos_X - portal_blue.pos_X);
+                        chell.setPos_Y(portal_orange.pos_Y - (chell.Height >> 1));
 
-                        f_portal_Y = _f_PORTAL_Y;
+                        f_portal_Y = PORTAL_Y;
                     }
                     else if (portal_orange.orientation == "bot")
                     {
-                        chell.SetPos_X(portal_orange.pos_X + chell.pos_X - portal_blue.pos_X);
-                        chell.SetPosMid_Y(portal_orange.posMid_Y);
+                        chell.setPos_X(portal_orange.pos_X + chell.pos_X - portal_blue.pos_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y);
 
-                        f_portal_Y = -_f_PORTAL_Y /** Math.Max(1, (15 - chell.speed_Y))*/;
-                        //f_portal_Y = -_f_PORTAL_Y * 6;
+                        f_portal_Y = -PORTAL_Y /** Math.Max(1, (15 - chell.speed_Y))*/;
+                        //f_portal_Y = -PORTAL_Y * 6;
                     }
                 }
                 else if (portal_blue.orientation == "bot")
@@ -545,10 +537,10 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = -tmp1;
                         chell.acceleration_X = -tmp2;
 
-                        chell.SetPosMid_X(portal_orange.posMid_X);
-                        chell.SetPosMid_Y(portal_orange.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y);
 
-                        f_portal_X = -_f_PORTAL_X;
+                        f_portal_X = -PORTAL_X;
                     }
                     else if (portal_orange.orientation == "left")
                     {
@@ -559,27 +551,27 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = tmp1;
                         chell.acceleration_X = tmp2;
 
-                        chell.SetPosMid_X(portal_orange.posMid_X);
-                        chell.SetPosMid_Y(portal_orange.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y);
 
-                        f_portal_X = _f_PORTAL_X;
+                        f_portal_X = PORTAL_X;
                     }
                     else if (portal_orange.orientation == "top")
                     {
-                        f_portal_Y = _f_PORTAL_Y;
+                        f_portal_Y = PORTAL_Y;
 
-                        chell.SetPosMid_Y(portal_orange.posMid_Y - (chell.Height >> 1));
-                        chell.SetPosMid_X(portal_orange.posMid_X + chell.posMid_X - portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y - (chell.Height >> 1));
+                        chell.setPosMid_X(portal_orange.posMid_X + chell.posMid_X - portal_blue.posMid_X);
                     }
                     else if (portal_orange.orientation == "bot")
                     {
                         chell.speed_Y = -chell.speed_Y;
                         chell.acceleration_Y = -chell.acceleration_Y;
 
-                        chell.SetPosMid_X(portal_orange.posMid_X + chell.posMid_X - portal_blue.posMid_X);
-                        chell.SetPosMid_Y(portal_orange.posMid_Y);
+                        chell.setPosMid_X(portal_orange.posMid_X + chell.posMid_X - portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_orange.posMid_Y);
 
-                        f_portal_Y = -_f_PORTAL_Y;
+                        f_portal_Y = -PORTAL_Y;
                     }
                 }
 
@@ -595,16 +587,16 @@ namespace Synless_Engine
                         chell.acceleration_X = -chell.acceleration_X;
                         chell.speed_X = chell.last_speed_X = -chell.speed_X;
 
-                        chell.SetPos_Y(chell.pos_Y + portal_blue.pos_Y - portal_orange.pos_Y);
-                        chell.SetPosMid_X(portal_blue.posMid_X);
+                        chell.setPos_Y(chell.pos_Y + portal_blue.pos_Y - portal_orange.pos_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
 
-                        f_portal_X = -_f_PORTAL_X;
+                        f_portal_X = -PORTAL_X;
                     }
                     else if (portal_blue.orientation == "left")
                     {
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPos_Y(chell.pos_Y + portal_blue.pos_Y - portal_orange.pos_Y);
-                        f_portal_X = _f_PORTAL_X;
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPos_Y(chell.pos_Y + portal_blue.pos_Y - portal_orange.pos_Y);
+                        f_portal_X = PORTAL_X;
                     }
                     else if (portal_blue.orientation == "top")
                     {
@@ -615,10 +607,10 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = tmp1;
                         chell.acceleration_X = tmp2;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_Y = _f_PORTAL_Y;
+                        f_portal_Y = PORTAL_Y;
                     }
                     else if (portal_blue.orientation == "bot")
                     {
@@ -629,20 +621,20 @@ namespace Synless_Engine
                         chell.acceleration_Y = -chell.acceleration_X;
                         chell.acceleration_X = tmp2;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_Y = -_f_PORTAL_Y;
+                        f_portal_Y = -PORTAL_Y;
                     }
                 }
                 else if (portal_orange.orientation == "left")
                 {
                     if (portal_blue.orientation == "rigth")
                     {
-                        chell.SetPosMid_X(portal_blue.posMid_X - (chell.Width >> 1));
-                        chell.SetPos_Y(portal_blue.pos_Y + chell.pos_Y - portal_orange.pos_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X - (chell.Width >> 1));
+                        chell.setPos_Y(portal_blue.pos_Y + chell.pos_Y - portal_orange.pos_Y);
 
-                        f_portal_X = -_f_PORTAL_X;
+                        f_portal_X = -PORTAL_X;
 
                     }
                     else if (portal_blue.orientation == "left")
@@ -650,10 +642,10 @@ namespace Synless_Engine
                         chell.acceleration_X = -chell.acceleration_X;
                         chell.speed_X = chell.last_speed_X = -chell.speed_X;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPosMid_Y(chell.posMid_Y + portal_blue.posMid_Y - portal_orange.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPosMid_Y(chell.posMid_Y + portal_blue.posMid_Y - portal_orange.posMid_Y);
 
-                        f_portal_X = _f_PORTAL_X;
+                        f_portal_X = PORTAL_X;
                     }
                     else if (portal_blue.orientation == "top")
                     {
@@ -664,10 +656,10 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = tmp1;
                         chell.acceleration_X = tmp2;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_Y = _f_PORTAL_Y;
+                        f_portal_Y = PORTAL_Y;
                     }
 
                     else if (portal_blue.orientation == "bot")
@@ -679,10 +671,10 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = tmp1;
                         chell.acceleration_X = tmp2;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_Y = -_f_PORTAL_Y;
+                        f_portal_Y = -PORTAL_Y;
                     }
                 }
                 else if (portal_orange.orientation == "top")
@@ -696,10 +688,10 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = -tmp1;
                         chell.acceleration_X = -tmp2;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_X = -_f_PORTAL_X;
+                        f_portal_X = -PORTAL_X;
                     }
                     else if (portal_blue.orientation == "left")
                     {
@@ -710,27 +702,27 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = -tmp1;
                         chell.acceleration_X = -tmp2;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_X = _f_PORTAL_X;
+                        f_portal_X = PORTAL_X;
                     }
                     else if (portal_blue.orientation == "top")
                     {
                         chell.speed_Y = -chell.speed_Y;
                         chell.acceleration_Y = -chell.acceleration_Y;
 
-                        chell.SetPos_X(portal_blue.pos_X + chell.pos_X - portal_orange.pos_X);
-                        chell.SetPos_Y(portal_blue.pos_Y - (chell.Height >> 1));
+                        chell.setPos_X(portal_blue.pos_X + chell.pos_X - portal_orange.pos_X);
+                        chell.setPos_Y(portal_blue.pos_Y - (chell.Height >> 1));
 
-                        f_portal_Y = _f_PORTAL_Y;
+                        f_portal_Y = PORTAL_Y;
                     }
                     else if (portal_blue.orientation == "bot")
                     {
-                        chell.SetPos_X(portal_blue.pos_X + chell.pos_X - portal_orange.pos_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPos_X(portal_blue.pos_X + chell.pos_X - portal_orange.pos_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_Y = -_f_PORTAL_Y;
+                        f_portal_Y = -PORTAL_Y;
                     }
                 }
                 else if (portal_orange.orientation == "bot")
@@ -744,10 +736,10 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = -tmp1;
                         chell.acceleration_X = -tmp2;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_X = -_f_PORTAL_X;
+                        f_portal_X = -PORTAL_X;
                     }
                     else if (portal_blue.orientation == "left")
                     {
@@ -758,26 +750,26 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = tmp1;
                         chell.acceleration_X = tmp2;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_X = _f_PORTAL_X;
+                        f_portal_X = PORTAL_X;
                     }
                     else if (portal_blue.orientation == "top")
                     {
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_Y = _f_PORTAL_Y;
+                        f_portal_Y = PORTAL_Y;
                     }
                     else if (portal_blue.orientation == "bot")
                     {
                         chell.speed_Y = -chell.speed_Y;
                         chell.acceleration_Y = -chell.acceleration_Y;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X + (chell.posMid_X - portal_orange.posMid_X));
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
-                        f_portal_Y = -_f_PORTAL_Y;
+                        chell.setPosMid_X(portal_blue.posMid_X + (chell.posMid_X - portal_orange.posMid_X));
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
+                        f_portal_Y = -PORTAL_Y;
                     }
                 }
                 else if (portal_orange.orientation == "top")
@@ -791,10 +783,10 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = -tmp1;
                         chell.acceleration_X = -tmp2;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_X = -_f_PORTAL_X;
+                        f_portal_X = -PORTAL_X;
                     }
                     else if (portal_blue.orientation == "left")
                     {
@@ -805,27 +797,27 @@ namespace Synless_Engine
                         chell.speed_X = chell.last_speed_X = tmp1;
                         chell.acceleration_X = tmp2;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_X = _f_PORTAL_X;
+                        f_portal_X = PORTAL_X;
                     }
                     else if (portal_blue.orientation == "top")
                     {
                         chell.speed_Y = -chell.speed_Y;
                         chell.acceleration_Y = -chell.acceleration_Y;
 
-                        chell.SetPosMid_X(portal_blue.posMid_X + chell.posMid_X - portal_orange.posMid_X);
-                        chell.SetPosMid_Y(portal_blue.posMid_Y);
+                        chell.setPosMid_X(portal_blue.posMid_X + chell.posMid_X - portal_orange.posMid_X);
+                        chell.setPosMid_Y(portal_blue.posMid_Y);
 
-                        f_portal_Y = _f_PORTAL_Y;
+                        f_portal_Y = PORTAL_Y;
                     }
                     else if (portal_blue.orientation == "bot")
                     {
-                        chell.SetPos_X(portal_blue.pos_X + chell.pos_X - portal_orange.pos_X);
-                        chell.SetPos_Y(portal_blue.pos_Y - (chell.Height >> 1));
+                        chell.setPos_X(portal_blue.pos_X + chell.pos_X - portal_orange.pos_X);
+                        chell.setPos_Y(portal_blue.pos_Y - (chell.Height >> 1));
 
-                        f_portal_Y = -_f_PORTAL_Y;
+                        f_portal_Y = -PORTAL_Y;
                     }
                 }
             }
@@ -837,7 +829,7 @@ namespace Synless_Engine
         /// <summary>
         /// Set Chell viewing border according to her position around portals
         /// </summary>
-        private void CheckChellBorder()
+        private void checkChellBorder()
         {
             if (chell.pos_X <= portal_orange.pos_X && chell.posBorder_X >= portal_orange.pos_X && chell.posBorder_Y > portal_orange.pos_Y && chell.pos_Y < portal_orange.posBorder_Y && portal_orange.orientation == "rigth")
             {
@@ -885,7 +877,7 @@ namespace Synless_Engine
         /// <summary>
         /// Set the positions and orientation of the portals around the map according to the shots
         /// </summary>
-        private void UpdatePortalPos()
+        private void updatePortalPos()
         {
             if (canCast && chell.pixelToSee_X == 0 && chell.pixelToSee_Y == 0 && chell.pixelToSeeBorder_X == chell.Width && chell.pixelToSeeBorder_Y == chell.Height)
             {
@@ -897,18 +889,18 @@ namespace Synless_Engine
                     Caracter backup = new Caracter(portal_blue, true);
                     if (chell.isFalling)
                     {
-                        portal_blue.SetPosBorder_Y(chell.posBorder_Y - 2);
+                        portal_blue.setPosBorder_Y(chell.posBorder_Y - 2);
                     }
                     else
                     {
-                        portal_blue.SetPosBorder_Y(chell.posBorder_Y + 2);
+                        portal_blue.setPosBorder_Y(chell.posBorder_Y + 2);
                     }
-                    portal_blue.SetPosMid_X(chell.posMid_X);
-                    portal_blue.SetPosMid_Y(chell.posMid_X, chell.posMid_Y, "bot");
+                    portal_blue.setPosMid_X(chell.posMid_X);
+                    portal_blue.setPosMid_Y(chell.posMid_X, chell.posMid_Y, "bot");
                     if (portalShot_X > 0 && portalShot_Y == 0)
                     {   // 6
-                        portal_blue.Rotation("rigth");
-                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.AddX(portalShot_X); }
+                        portal_blue.rotation("rigth");
+                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.X_mm(); }
                         while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 0) { portal_blue.Y_pp(); }
                         while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 0) { portal_blue.Y_mm(); }
@@ -920,8 +912,8 @@ namespace Synless_Engine
                     if (portalShot_X < 0 && portalShot_Y == 0)
                     {   // 4
 
-                        portal_blue.Rotation("left");
-                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.AddX(portalShot_X); }
+                        portal_blue.rotation("left");
+                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0/* || carte.tile_type[lvl,portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 3*/) { portal_blue.X_pp(); }
                         while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 0) { portal_blue.Y_pp(); }
                         while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 0) { portal_blue.Y_mm(); }
@@ -932,8 +924,8 @@ namespace Synless_Engine
                     }
                     if (portalShot_Y > 0 && portalShot_X == 0)
                     {   // 2
-                        portal_blue.Rotation("bot");
-                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.AddY(portalShot_Y); }
+                        portal_blue.rotation("bot");
+                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.add_Y(portalShot_Y); }
                         while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0 /*|| carte.tile_type[lvl,portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 3*/) { portal_blue.Y_mm(); }
                         while (carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.X_pp(); }
                         while (carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.X_mm(); }
@@ -944,8 +936,8 @@ namespace Synless_Engine
                     }
                     if (portalShot_Y < 0 && portalShot_X == 0)
                     {   // 8
-                        portal_blue.Rotation("top");
-                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.AddY(portalShot_Y); portal_blue.AddX(portalShot_X); }
+                        portal_blue.rotation("top");
+                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.add_Y(portalShot_Y); portal_blue.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0 /*|| carte.tile_type[lvl,portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 3*/) { portal_blue.Y_pp(); }
                         while (carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.X_pp(); }
                         while (carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.X_mm(); }
@@ -956,11 +948,11 @@ namespace Synless_Engine
                     }
                     if (portalShot_Y > 0 && portalShot_X < 0)
                     {   // 1
-                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.AddY(portalShot_Y); portal_blue.AddX(portalShot_X); }
+                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.add_Y(portalShot_Y); portal_blue.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0 /*|| carte.tile_type[lvl,portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 3*/) { portal_blue.Y_mm(); portal_blue.X_pp(); }
                         if (carte.level[lvl].tile_type[(portal_blue.posMid_X - 1) / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0)
                         {
-                            portal_blue.Rotation("left");
+                            portal_blue.rotation("left");
                             while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 0) { portal_blue.Y_pp(); }
                             while (carte.level[lvl].tile_type[(portal_blue.posMid_X + 1) / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 0) { portal_blue.Y_mm(); } // TRICKY TRICKY TRICKY
                             if (carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 1)
@@ -970,7 +962,7 @@ namespace Synless_Engine
                         }
                         else if (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, (portal_blue.posMid_Y + 1) / carte.tile_size] != 0)
                         {
-                            portal_blue.Rotation("bot");
+                            portal_blue.rotation("bot");
                             while (carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.X_pp(); }
                             while (carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.X_mm(); }
                             if (carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 1)
@@ -985,11 +977,11 @@ namespace Synless_Engine
                     }
                     if (portalShot_Y > 0 && portalShot_X > 0)
                     {   // 3
-                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.AddY(portalShot_Y); portal_blue.AddX(portalShot_X); }
+                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.add_Y(portalShot_Y); portal_blue.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.Y_mm(); portal_blue.X_mm(); }
                         if (carte.level[lvl].tile_type[(portal_blue.posMid_X + 1) / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0)
                         {
-                            portal_blue.Rotation("rigth");
+                            portal_blue.rotation("rigth");
                             while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 0) { portal_blue.Y_pp(); }
                             while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 0) { portal_blue.Y_mm(); }
                             if (carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 1)
@@ -999,7 +991,7 @@ namespace Synless_Engine
                         }
                         else if (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, (portal_blue.posMid_Y + 1) / carte.tile_size] != 0)
                         {
-                            portal_blue.Rotation("bot");
+                            portal_blue.rotation("bot");
                             while (carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.X_pp(); }
                             while (carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.X_mm(); }
                             if (carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 1)
@@ -1014,11 +1006,11 @@ namespace Synless_Engine
                     }
                     if (portalShot_Y < 0 && portalShot_X > 0)
                     {   // 9
-                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.AddY(portalShot_Y); portal_blue.AddX(portalShot_X); }
+                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.add_Y(portalShot_Y); portal_blue.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.Y_pp(); portal_blue.X_mm(); }
                         if (carte.level[lvl].tile_type[(portal_blue.posMid_X + 1) / carte.tile_size, (portal_blue.posMid_Y + 1) / carte.tile_size] != 0)
                         {
-                            portal_blue.Rotation("rigth");
+                            portal_blue.rotation("rigth");
                             while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 0) { portal_blue.Y_pp(); }
                             while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 0) { portal_blue.Y_mm(); }
                             if (carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 1)
@@ -1028,7 +1020,7 @@ namespace Synless_Engine
                         }
                         else if (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, (portal_blue.posMid_Y - 1) / carte.tile_size] != 0)
                         {
-                            portal_blue.Rotation("top");
+                            portal_blue.rotation("top");
                             while (carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 0) { portal_blue.X_pp(); }
                             while (carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 0) { portal_blue.X_mm(); }
                             if (carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 1)
@@ -1043,11 +1035,11 @@ namespace Synless_Engine
                     }
                     if (portalShot_Y < 0 && portalShot_X < 0)
                     {   // 7
-                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.AddY(portalShot_Y); portal_blue.AddX(portalShot_X); }
+                        while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] == 3) { portal_blue.add_Y(portalShot_Y); portal_blue.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.Y_pp(); portal_blue.X_pp(); }
                         if (carte.level[lvl].tile_type[(portal_blue.posMid_X - 1) / carte.tile_size, (portal_blue.posMid_Y + 1) / carte.tile_size] != 0)
                         {
-                            portal_blue.Rotation("left");
+                            portal_blue.rotation("left");
                             while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 0) { portal_blue.Y_pp(); }
                             while (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 0) { portal_blue.Y_mm(); }
                             if (carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.posBorder_Y / carte.tile_size] != 1)
@@ -1057,7 +1049,7 @@ namespace Synless_Engine
                         }
                         else if (carte.level[lvl].tile_type[portal_blue.posMid_X / carte.tile_size, (portal_blue.posMid_Y - 1) / carte.tile_size] != 0)
                         {
-                            portal_blue.Rotation("top");
+                            portal_blue.rotation("top");
                             while (carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.X_pp(); }
                             while (carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.posMid_Y / carte.tile_size] != 0) { portal_blue.X_mm(); }
                             if (carte.level[lvl].tile_type[portal_blue.pos_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_blue.posBorder_X / carte.tile_size, portal_blue.pos_Y / carte.tile_size] != 1)
@@ -1096,20 +1088,20 @@ namespace Synless_Engine
                 else
                 {   // PORTAL ORANGE LOCATION PROCESSING                    
                     Caracter backup = new Caracter(portal_orange, false);
-                    portal_orange.SetPosMid_X(chell.posMid_X);
+                    portal_orange.setPosMid_X(chell.posMid_X);
                     if (chell.isFalling)
                     {
-                        portal_orange.SetPosBorder_Y(chell.posBorder_Y);
+                        portal_orange.setPosBorder_Y(chell.posBorder_Y);
                     }
                     else
                     {
-                        portal_orange.SetPosBorder_Y(chell.posBorder_Y + 2);
+                        portal_orange.setPosBorder_Y(chell.posBorder_Y + 2);
                     }
-                    portal_orange.SetPosMid_Y(chell.posMid_X, chell.posMid_Y, "bot");
+                    portal_orange.setPosMid_Y(chell.posMid_X, chell.posMid_Y, "bot");
                     if (portalShot_X > 0 && portalShot_Y == 0)
                     {   // 6
-                        portal_orange.Rotation("rigth");
-                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.AddX(portalShot_X); }
+                        portal_orange.rotation("rigth");
+                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_mm(); }
                         while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 0) { portal_orange.Y_pp(); }
                         while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 0) { portal_orange.Y_mm(); }
@@ -1122,8 +1114,8 @@ namespace Synless_Engine
                     if (portalShot_X < 0 && portalShot_Y == 0)
                     {   // 4
 
-                        portal_orange.Rotation("left");
-                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.AddX(portalShot_X); }
+                        portal_orange.rotation("left");
+                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_pp(); }
                         while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 0) { portal_orange.Y_pp(); }
                         while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 0) { portal_orange.Y_mm(); }
@@ -1134,8 +1126,8 @@ namespace Synless_Engine
                     }
                     if (portalShot_Y > 0 && portalShot_X == 0)
                     {   // 2
-                        portal_orange.Rotation("bot");
-                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.AddY(portalShot_Y); }
+                        portal_orange.rotation("bot");
+                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.add_Y(portalShot_Y); }
                         while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.Y_mm(); }
                         while (carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_pp(); }
                         while (carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_mm(); }
@@ -1146,8 +1138,8 @@ namespace Synless_Engine
                     }
                     if (portalShot_Y < 0 && portalShot_X == 0)
                     {   // 8
-                        portal_orange.Rotation("top");
-                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.AddY(portalShot_Y); portal_orange.AddX(portalShot_X); }
+                        portal_orange.rotation("top");
+                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.add_Y(portalShot_Y); portal_orange.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.Y_pp(); }
                         while (carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_pp(); }
                         while (carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_mm(); }
@@ -1158,11 +1150,11 @@ namespace Synless_Engine
                     }
                     if (portalShot_Y > 0 && portalShot_X < 0)
                     {   // 1
-                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.AddY(portalShot_Y); portal_orange.AddX(portalShot_X); }
+                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.add_Y(portalShot_Y); portal_orange.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.Y_mm(); portal_orange.X_pp(); }
                         if (carte.level[lvl].tile_type[(portal_orange.posMid_X - 1) / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0)
                         {
-                            portal_orange.Rotation("left");
+                            portal_orange.rotation("left");
                             while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 0) { portal_orange.Y_pp(); }
                             while (carte.level[lvl].tile_type[(portal_orange.posMid_X + 1) / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 0) { portal_orange.Y_mm(); } // TRICKY TRICKY TRICKY
                             if (carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 1)
@@ -1172,7 +1164,7 @@ namespace Synless_Engine
                         }
                         else if (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, (portal_orange.posMid_Y + 1) / carte.tile_size] != 0)
                         {
-                            portal_orange.Rotation("bot");
+                            portal_orange.rotation("bot");
                             while (carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_pp(); }
                             while (carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_mm(); }
                             if (carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 1)
@@ -1187,11 +1179,11 @@ namespace Synless_Engine
                     }
                     if (portalShot_Y > 0 && portalShot_X > 0)
                     {   // 3
-                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.AddY(portalShot_Y); portal_orange.AddX(portalShot_X); }
+                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.add_Y(portalShot_Y); portal_orange.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.Y_mm(); portal_orange.X_mm(); }
                         if (carte.level[lvl].tile_type[(portal_orange.posMid_X + 1) / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0)
                         {
-                            portal_orange.Rotation("rigth");
+                            portal_orange.rotation("rigth");
                             while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 0) { portal_orange.Y_pp(); }
                             while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 0) { portal_orange.Y_mm(); }
                             if (carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 1)
@@ -1201,7 +1193,7 @@ namespace Synless_Engine
                         }
                         else if (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, (portal_orange.posMid_Y + 1) / carte.tile_size] != 0)
                         {
-                            portal_orange.Rotation("bot");
+                            portal_orange.rotation("bot");
                             while (carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_pp(); }
                             while (carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_mm(); }
                             if (carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 1)
@@ -1216,11 +1208,11 @@ namespace Synless_Engine
                     }
                     if (portalShot_Y < 0 && portalShot_X > 0)
                     {   // 9
-                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.AddY(portalShot_Y); portal_orange.AddX(portalShot_X); }
+                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.add_Y(portalShot_Y); portal_orange.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.Y_pp(); portal_orange.X_mm(); }
                         if (carte.level[lvl].tile_type[(portal_orange.posMid_X + 1) / carte.tile_size, (portal_orange.posMid_Y + 1) / carte.tile_size] != 0)
                         {
-                            portal_orange.Rotation("rigth");
+                            portal_orange.rotation("rigth");
                             while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 0) { portal_orange.Y_pp(); }
                             while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 0) { portal_orange.Y_mm(); }
                             if (carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 1)
@@ -1230,7 +1222,7 @@ namespace Synless_Engine
                         }
                         else if (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, (portal_orange.posMid_Y - 1) / carte.tile_size] != 0)
                         {
-                            portal_orange.Rotation("top");
+                            portal_orange.rotation("top");
                             while (carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_pp(); }
                             while (carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_mm(); }
                             if (carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 1)
@@ -1245,11 +1237,11 @@ namespace Synless_Engine
                     }
                     if (portalShot_Y < 0 && portalShot_X < 0)
                     {   // 7
-                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.AddY(portalShot_Y); portal_orange.AddX(portalShot_X); }
+                        while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 0 || carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] == 3) { portal_orange.add_Y(portalShot_Y); portal_orange.add_X(portalShot_X); }
                         while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.Y_pp(); portal_orange.X_pp(); }
                         if (carte.level[lvl].tile_type[(portal_orange.posMid_X - 1) / carte.tile_size, (portal_orange.posMid_Y + 1) / carte.tile_size] != 0)
                         {
-                            portal_orange.Rotation("left");
+                            portal_orange.rotation("left");
                             while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 0) { portal_orange.Y_pp(); }
                             while (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 0) { portal_orange.Y_mm(); }
                             if (carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.posBorder_Y / carte.tile_size] != 1)
@@ -1259,7 +1251,7 @@ namespace Synless_Engine
                         }
                         else if (carte.level[lvl].tile_type[portal_orange.posMid_X / carte.tile_size, (portal_orange.posMid_Y - 1) / carte.tile_size] != 0)
                         {
-                            portal_orange.Rotation("top");
+                            portal_orange.rotation("top");
                             while (carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_pp(); }
                             while (carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.posMid_Y / carte.tile_size] != 0) { portal_orange.X_mm(); }
                             if (carte.level[lvl].tile_type[portal_orange.pos_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 1 || carte.level[lvl].tile_type[portal_orange.posBorder_X / carte.tile_size, portal_orange.pos_Y / carte.tile_size] != 1)
@@ -1367,7 +1359,7 @@ namespace Synless_Engine
                         // ELSE BACKGROUND COLOR
                     }
                 }
-                chell.ResetBorder();
+                chell.resetBorder();
             }
             // DRAWS THE PORTALS
             if (displayBlue)
@@ -1450,7 +1442,7 @@ namespace Synless_Engine
                 for (int x = 0; x < carte.tile_Width; x++)
                 {
                     //addToScreen(carte.level[lvl].spr tile_type[x, y], (x * carte.tile_size), (y * carte.tile_size));
-                    addToScreen(carte.level[lvl].GetBlock(x, y), x * carte.tile_size, y * carte.tile_size);
+                    addToScreen(carte.level[lvl].getBlock(x, y), x * carte.tile_size, y * carte.tile_size);
                     //Bitmap tmp = new Bitmap(carte.level[lvl].background.GetSprite[carte.level[lvl].background.tiles_type[x,y]]);
                     //addToScreen(carte.background.tiles[carte.tile_type[lvl,x, y]], (x * carte.tile_size), (y * carte.tile_size));
                 }
@@ -1466,7 +1458,7 @@ namespace Synless_Engine
             {
                 for (int y = chell.last_pos_Y / carte.tile_size; y <= chell.last_posBorder_Y / carte.tile_size; y++)
                 {
-                    addToScreen(carte.level[lvl].GetBlock(x, y), x * carte.tile_size, y * carte.tile_size);
+                    addToScreen(carte.level[lvl].getBlock(x, y), x * carte.tile_size, y * carte.tile_size);
                     //addToScreen(carte.background.tiles[carte.tile_type[lvl,x, y]], (x * carte.tile_size), (y * carte.tile_size));
                 }
             }
@@ -1484,7 +1476,7 @@ namespace Synless_Engine
                 {
                     for (int y = portal_blue.pos_Y / carte.tile_size; y <= portal_blue.posBorder_Y / carte.tile_size; y++)
                     {
-                        addToScreen(carte.level[lvl].GetBlock(x, y), x * carte.tile_size, y * carte.tile_size);
+                        addToScreen(carte.level[lvl].getBlock(x, y), x * carte.tile_size, y * carte.tile_size);
                         //addToScreen(carte.background.tiles[carte.tile_type[lvl,x, y]], (x * carte.tile_size), (y * carte.tile_size));
                     }
                 }
@@ -1495,7 +1487,7 @@ namespace Synless_Engine
                 {
                     for (int y = portal_orange.pos_Y / carte.tile_size; y <= portal_orange.posBorder_Y / carte.tile_size; y++)
                     {
-                        addToScreen(carte.level[lvl].GetBlock(x, y), x * carte.tile_size, y * carte.tile_size);
+                        addToScreen(carte.level[lvl].getBlock(x, y), x * carte.tile_size, y * carte.tile_size);
                         //addToScreen(carte.background.tiles[carte.tile_type[lvl,x, y]], (x * carte.tile_size), (y * carte.tile_size));
                     }
                 }
@@ -1630,8 +1622,8 @@ namespace Synless_Engine
         public int getFricY() { return f_frottement_Y; }
         public int getExtY() { return f_ext_Y; }
         public int getG() { return G; }
-        public int getP() { return poids; }
-        public void setG(int _g) { }//G = Math.Max(Math.Min(_g, 100), 25); }
+        public int getP() { return f_poids; }
+        //public void setG(int _g) { G = Math.Max(Math.Min(_g, 100), 25); }
         #endregion
     }
 }

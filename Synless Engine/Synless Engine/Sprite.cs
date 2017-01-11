@@ -1,9 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
+using System.Windows;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Resources;
 
 namespace Synless_Engine
 {
@@ -16,8 +19,8 @@ namespace Synless_Engine
         private const string bmpPath = "frames/";
         public Bitmap[] tiles    = new Bitmap[32];
         public int[] tiles_type  = new int[32];
-        public int Width;
-        public int Height;
+        public int width;
+        public int height;
         public int nbSprite = 0;
         #endregion 
 
@@ -30,7 +33,8 @@ namespace Synless_Engine
                 {   try
                     {
                         path = bmpPath + "chell" + n.ToString() + ".bmp";
-                        tiles[n] = new Bitmap(path);
+                        ResourceManager rm = Properties.Resources.ResourceManager;
+                        tiles[n] = (Bitmap)rm.GetObject(path);
                         nbSprite++;
                     }
                     catch { break; }
@@ -92,18 +96,17 @@ namespace Synless_Engine
 
                 }
             }
-            Width = tiles[0].Width;
-            Height = tiles[0].Height;
+            width = tiles[0].Width;
+            height = tiles[0].Height;
         }
 
         /// <summary>
         /// Get the 2D array of pixel
         /// </summary>
         /// <param name="index">Sprite to be returned</param>
-        public Bitmap GetSprite(int _index)
+        public Bitmap getSprite(int _index)
         {
             return tiles[_index];
         }
-
     }
 }
