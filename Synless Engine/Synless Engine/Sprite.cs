@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -17,6 +17,8 @@ namespace Synless_Engine
     {
         #region Variables
         private const string bmpPath = "frames/";
+        private const int maxChellFrame = 14;
+
         public Bitmap[] tiles    = new Bitmap[32];
         public int[] tiles_type  = new int[32];
         public int width;
@@ -29,7 +31,7 @@ namespace Synless_Engine
             if (_type == "chell")
             {   
                 string path = "";
-                for (int n = 0; n < tiles_type.Length; n++)
+                for (int n = 0; n < maxChellFrame; n++)
                 {
                     path = bmpPath + "chell" + n.ToString() + ".bmp";
                     //ResourceManager rm = Properties.Resources.ResourceManager;
@@ -72,13 +74,13 @@ namespace Synless_Engine
             }
             else if (_type == "portal_blue")
             {
-                tiles[0] = new Bitmap(bmpPath + "portal_blue_rigth_backup.bmp");
-                tiles[1] = new Bitmap(bmpPath + "portal_blue_top_backup.bmp");
+                tiles[0] = new Bitmap(bmpPath + "portal_blue_rigth.bmp");
+                tiles[1] = new Bitmap(bmpPath + "portal_blue_top.bmp");
             }
             else if (_type == "portal_orange")
             { 
-                tiles[0] = new Bitmap(bmpPath + "portal_orange_rigth_backup.bmp");
-                tiles[1] = new Bitmap(bmpPath + "portal_orange_top_backup.bmp");
+                tiles[0] = new Bitmap(bmpPath + "portal_orange_rigth.bmp");
+                tiles[1] = new Bitmap(bmpPath + "portal_orange_top.bmp");
             }
             width = tiles[0].Width;
             height = tiles[0].Height;
