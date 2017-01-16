@@ -30,14 +30,12 @@ namespace Synless_Engine
             {   
                 string path = "";
                 for (int n = 0; n < tiles_type.Length; n++)
-                {   try
-                    {
-                        path = bmpPath + "chell" + n.ToString() + ".bmp";
-                        ResourceManager rm = Properties.Resources.ResourceManager;
-                        tiles[n] = (Bitmap)rm.GetObject(path);
-                        nbSprite++;
-                    }
-                    catch { break; }
+                {
+                    path = bmpPath + "chell" + n.ToString() + ".bmp";
+                    //ResourceManager rm = Properties.Resources.ResourceManager;
+                    //tiles[n] = (Bitmap)rm.GetObject(path);
+                    tiles[n] = new Bitmap(path);
+                    nbSprite++;                    
                 }
                 tiles_type[0] = 0;
                 tiles_type[1] = 1;
@@ -74,27 +72,13 @@ namespace Synless_Engine
             }
             else if (_type == "portal_blue")
             {
-                try
-                {
-                    tiles[0] = new Bitmap(bmpPath + "portal_blue_rigth_backup.bmp");
-                    tiles[1] = new Bitmap(bmpPath + "portal_blue_top_backup.bmp");
-                }
-                catch
-                {
-
-                }         
+                tiles[0] = new Bitmap(bmpPath + "portal_blue_rigth_backup.bmp");
+                tiles[1] = new Bitmap(bmpPath + "portal_blue_top_backup.bmp");
             }
             else if (_type == "portal_orange")
-            {
-                try
-                { 
-                    tiles[0] = new Bitmap(bmpPath + "portal_orange_rigth_backup.bmp");
-                    tiles[1] = new Bitmap(bmpPath + "portal_orange_top_backup.bmp");
-                }
-                catch
-                {
-
-                }
+            { 
+                tiles[0] = new Bitmap(bmpPath + "portal_orange_rigth_backup.bmp");
+                tiles[1] = new Bitmap(bmpPath + "portal_orange_top_backup.bmp");
             }
             width = tiles[0].Width;
             height = tiles[0].Height;
