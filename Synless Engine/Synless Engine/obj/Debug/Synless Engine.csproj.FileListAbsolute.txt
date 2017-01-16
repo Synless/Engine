@@ -1,9 +1,0 @@
-d:\documents\visual studio 2015\Projects\Synless Engine\Synless Engine\bin\Debug\Synless Engine.exe.config
-d:\documents\visual studio 2015\Projects\Synless Engine\Synless Engine\obj\Debug\Synless Engine.csprojResolveAssemblyReference.cache
-d:\documents\visual studio 2015\Projects\Synless Engine\Synless Engine\obj\Debug\Synless_Engine.Properties.Resources.resources
-d:\documents\visual studio 2015\Projects\Synless Engine\Synless Engine\obj\Debug\Synless Engine.csproj.GenerateResource.Cache
-d:\documents\visual studio 2015\Projects\Synless Engine\Synless Engine\bin\Debug\Synless Engine.exe
-d:\documents\visual studio 2015\Projects\Synless Engine\Synless Engine\bin\Debug\Synless Engine.pdb
-d:\documents\visual studio 2015\Projects\Synless Engine\Synless Engine\obj\Debug\Synless Engine.exe
-d:\documents\visual studio 2015\Projects\Synless Engine\Synless Engine\obj\Debug\Synless Engine.pdb
-d:\documents\visual studio 2015\Projects\Synless Engine\Synless Engine\obj\Debug\Synless_Engine.Form1.resources
