@@ -7,4 +7,4 @@
 
 Sticking close to C/C++
 
-ZQSD to move the character, numberpad to shot a portal, numberpad 5 to switch between the orange and the blue portal.
+AWSD/ZQSD to move the character, numberpad to shot a portal in 8 directions, numberpad 5 to switch between the orange and the blue portal.
