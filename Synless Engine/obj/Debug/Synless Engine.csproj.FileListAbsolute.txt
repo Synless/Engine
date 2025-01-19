@@ -1,0 +1,11 @@
+C:\Users\Synless\Desktop\Engine-master\Synless Engine\Synless Engine\bin\Debug\Synless Engine.exe.config
+C:\Users\Synless\Desktop\Engine-master\Synless Engine\Synless Engine\bin\Debug\Synless Engine.exe
+C:\Users\Synless\Desktop\Engine-master\Synless Engine\Synless Engine\bin\Debug\Synless Engine.pdb
+C:\Users\Synless\Desktop\Engine-master\Synless Engine\Synless Engine\obj\Debug\Synless Engine.csproj.AssemblyReference.cache
+C:\Users\Synless\Desktop\Engine-master\Synless Engine\Synless Engine\obj\Debug\Synless Engine.csproj.SuggestedBindingRedirects.cache
+C:\Users\Synless\Desktop\Engine-master\Synless Engine\Synless Engine\obj\Debug\Synless_Engine.Form1.resources
+C:\Users\Synless\Desktop\Engine-master\Synless Engine\Synless Engine\obj\Debug\Synless_Engine.Properties.Resources.resources
+C:\Users\Synless\Desktop\Engine-master\Synless Engine\Synless Engine\obj\Debug\Synless Engine.csproj.GenerateResource.cache
+C:\Users\Synless\Desktop\Engine-master\Synless Engine\Synless Engine\obj\Debug\Synless Engine.csproj.CoreCompileInputs.cache
+C:\Users\Synless\Desktop\Engine-master\Synless Engine\Synless Engine\obj\Debug\Synless Engine.exe
+C:\Users\Synless\Desktop\Engine-master\Synless Engine\Synless Engine\obj\Debug\Synless Engine.pdb
